@@ -468,7 +468,7 @@ export function calculateSurvival(input: UserInput): SurvivalResult {
           estimatedCost: cheapestNextPurchase.estimatedCost,
           mealsUnlocked: fallbackUnlockedMeals || cheapestNextPurchase.mealsUnlocked,
           coverageAfterPurchase: displayedImprovedCoverage,
-          verdict: 'selected',
+          verdict: 'selected' as const,
           reason: cheapestNextPurchase.reason,
         },
       ];
