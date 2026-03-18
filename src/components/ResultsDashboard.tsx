@@ -73,6 +73,9 @@ const ResultsDashboard = ({ result, input, onViewPlan, onBack }: ResultsDashboar
           <p className="text-sm text-muted-foreground leading-relaxed">
             Your current pantry and remaining RM{input.budget.toFixed(2)} budget can almost cover the next {input.daysLeft} days, but the plan is still fragile.
           </p>
+          <p className="text-sm text-muted-foreground leading-relaxed mt-2">
+            Your pantry already supports a few low-cost meals. One small purchase can extend your plan and reduce the risk of running out before your next allowance.
+          </p>
         </motion.div>
 
         {/* Urgency card */}
@@ -105,9 +108,8 @@ const ResultsDashboard = ({ result, input, onViewPlan, onBack }: ResultsDashboar
             <div>
               <span className="font-label text-foreground block mb-1">Cheapest Next Purchase</span>
               <p className="text-foreground font-semibold">
-                Buy {result.cheapestNextPurchase.name} for RM{result.cheapestNextPurchase.estimatedCost.toFixed(2)}
+                Buy {result.cheapestNextPurchase.name.toLowerCase()} for RM{result.cheapestNextPurchase.estimatedCost.toFixed(2)} to unlock more affordable meal options.
               </p>
-              <p className="text-sm text-muted-foreground mt-1">{result.cheapestNextPurchase.reason}</p>
             </div>
           </div>
         </motion.div>

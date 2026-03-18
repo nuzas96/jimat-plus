@@ -1,9 +1,15 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Shield } from 'lucide-react';
+import { ArrowRight, Shield, Calendar, AlertTriangle, ShoppingCart } from 'lucide-react';
 
 interface LandingPageProps {
   onStart: () => void;
 }
+
+const VALUE_HIGHLIGHTS = [
+  { icon: Calendar, text: 'Know how many days your food can cover' },
+  { icon: AlertTriangle, text: 'See what happens if you do nothing' },
+  { icon: ShoppingCart, text: 'Find the cheapest next item to buy' },
+];
 
 const LandingPage = ({ onStart }: LandingPageProps) => {
   return (
@@ -40,7 +46,17 @@ const LandingPage = ({ onStart }: LandingPageProps) => {
           <ArrowRight className="w-5 h-5" />
         </motion.button>
 
-        <p className="mt-12 font-label text-muted-foreground">
+        {/* Value highlights */}
+        <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8">
+          {VALUE_HIGHLIGHTS.map(({ icon: Icon, text }) => (
+            <div key={text} className="flex items-center gap-2 text-muted-foreground">
+              <Icon className="w-4 h-4 text-primary flex-shrink-0" />
+              <span className="text-sm">{text}</span>
+            </div>
+          ))}
+        </div>
+
+        <p className="mt-8 font-label text-muted-foreground">
           No login required · Free to use · Private
         </p>
       </motion.div>

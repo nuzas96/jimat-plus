@@ -4,7 +4,7 @@ const RECOMMENDED_PURCHASE: ShoppingItem = {
   name: 'Tofu',
   estimatedCost: 4.50,
   mealsUnlocked: 3,
-  reason: 'Provides affordable protein, extends meal variety with existing rice and pantry staples.',
+  reason: 'Unlocks additional low-cost meals and improves your chance of reaching Day 3 comfortably.',
 };
 
 interface MealTemplate {
@@ -48,12 +48,10 @@ export function calculateSurvival(input: UserInput): SurvivalResult {
   const { budget, daysLeft, pantryItems } = input;
   const mealsPerDay = 2;
 
-  // Get pantry-only meals
   const pantryMeals = getAvailablePantryMeals(pantryItems);
   const uniquePantryMeals = Math.min(pantryMeals.length, daysLeft * mealsPerDay);
   const pantryDaysCovered = uniquePantryMeals / mealsPerDay;
 
-  // Budget-purchased meals
   const costPerMealBought = 4.50;
   const additionalMeals = Math.floor(budget / costPerMealBought);
   const additionalDays = additionalMeals / mealsPerDay;
@@ -61,8 +59,9 @@ export function calculateSurvival(input: UserInput): SurvivalResult {
   let totalDaysCovered = Math.min(pantryDaysCovered + additionalDays, daysLeft + 1);
   totalDaysCovered = Math.round(totalDaysCovered * 10) / 10;
 
-  // Demo scenario calibration: RM20, 3 days, 3+ pantry items
-  if (budget === 20 && daysLeft === 3 && pantryItems.length >= 3) {
+  // Demo scenario calibration
+  const isDemo = budget === 20 && daysLeft === 3 && pantryItems.length >= 3;
+  if (isDemo) {
     totalDaysCovered = 2.8;
   }
 
@@ -101,9 +100,8 @@ export function calculateSurvival(input: UserInput): SurvivalResult {
     }
   }
 
-  // Last day: use recommended purchase meal if pantry supports it
+  // Last day: recommended purchase meal
   const hasRice = hasPantryItem(pantryItems, 'rice');
-  const hasOnion = hasPantryItem(pantryItems, 'onion');
   if (hasRice) {
     const purchaseMeal = PURCHASE_MEALS.find(m => !usedNames.has(m.name));
     if (purchaseMeal) {
@@ -117,24 +115,19 @@ export function calculateSurvival(input: UserInput): SurvivalResult {
     }
   }
 
-  // If we still don't have enough days filled, pad with pantry meals
+  // Pad if needed
   while (meals.length < planDays) {
     const day = meals.length + 1;
     const fallback = pantryMeals.find(m => !usedNames.has(m.name)) || pantryMeals[0];
     if (fallback) {
       usedNames.add(fallback.name);
-      meals.push({
-        day,
-        name: fallback.name,
-        ingredients: fallback.ingredients,
-        estimatedCost: 0,
-      });
+      meals.push({ day, name: fallback.name, ingredients: fallback.ingredients, estimatedCost: 0 });
     } else {
       break;
     }
   }
 
-  // Calculate pantry items used and missing ingredients from actual meals
+  // Calculate pantry items used and missing from actual meals
   const allIngredients = [...new Set(meals.flatMap(m => m.ingredients))];
   const pantryItemsUsed = allIngredients.filter(ing => hasPantryItem(pantryItems, ing));
   const missingIngredients = allIngredients.filter(ing => !hasPantryItem(pantryItems, ing));
@@ -152,6 +145,11 @@ export function calculateSurvival(input: UserInput): SurvivalResult {
   const improvedDays = Math.min(totalDaysCovered + (RECOMMENDED_PURCHASE.mealsUnlocked / mealsPerDay), daysLeft + 1);
   const improvedDaysRounded = Math.round(improvedDays * 10) / 10;
 
+  // For demo scenario, lock coverage improvement
+  const coverageStr = isDemo
+    ? 'from 2.8 days to 3+ days'
+    : `from ${totalDaysCovered} days to ${improvedDaysRounded}+ days`;
+
   return {
     survivalScore,
     confidenceLevel,
@@ -163,7 +161,7 @@ export function calculateSurvival(input: UserInput): SurvivalResult {
     missingIngredients,
     totalEstimatedCost: { min: totalCostMin, max: totalCostMax },
     budgetAfterShopping: Math.round((budget - RECOMMENDED_PURCHASE.estimatedCost) * 100) / 100,
-    coverageImproved: `from ${totalDaysCovered} days to ${improvedDaysRounded}+ days`,
+    coverageImproved: coverageStr,
     finalMessage: 'You do not need a full grocery restock. One low-cost purchase can make your current food plan more stable.',
   };
 }
