@@ -96,14 +96,12 @@ const InputFlow = ({ onSubmit, onBack }: InputFlowProps) => {
   const parsedDaysLeft = Number(daysLeft);
   const isValid = budget !== '' && daysLeft !== '' && !Number.isNaN(parsedBudget) && !Number.isNaN(parsedDaysLeft) && parsedBudget >= 0 && parsedDaysLeft > 0;
 
-  // Progress calculation
   const filledSteps = [budget !== '', daysLeft !== '', true, pantryEntries.length > 0];
   const completedCount = filledSteps.filter(Boolean).length;
 
   return (
     <div className="min-h-screen flex flex-col items-center px-6 py-10 gradient-surface relative overflow-hidden">
-      {/* Background glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/5 rounded-full blur-3xl" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[250px] bg-primary/[0.04] rounded-full blur-3xl" />
 
       <motion.div
         initial={{ opacity: 0 }}
@@ -121,7 +119,7 @@ const InputFlow = ({ onSubmit, onBack }: InputFlowProps) => {
           Back
         </motion.button>
 
-        {/* Progress bar */}
+        {/* Progress */}
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -130,8 +128,8 @@ const InputFlow = ({ onSubmit, onBack }: InputFlowProps) => {
         >
           {STEP_LABELS.map((label, i) => (
             <div key={label} className="flex-1">
-              <div className={`h-1 rounded-full transition-all duration-500 ${i < completedCount ? 'bg-primary' : 'bg-border'}`} />
-              <span className={`text-[10px] mt-1 block tracking-wider uppercase font-display ${i < completedCount ? 'text-primary' : 'text-muted-foreground/40'}`}>
+              <div className={`h-1.5 rounded-full transition-all duration-500 ${i < completedCount ? 'gradient-warm' : 'bg-border'}`} />
+              <span className={`text-[10px] mt-1.5 block tracking-wider uppercase font-display ${i < completedCount ? 'text-primary' : 'text-muted-foreground/40'}`}>
                 {label}
               </span>
             </div>
@@ -156,13 +154,13 @@ const InputFlow = ({ onSubmit, onBack }: InputFlowProps) => {
           className="bg-card p-5 rounded-2xl shadow-card mb-3 border border-border"
         >
           <div className="flex items-center gap-2.5 mb-3">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-primary/[0.08] border border-primary/15 flex items-center justify-center">
               <Wallet className="w-4 h-4 text-primary" />
             </div>
             <label className="font-label text-muted-foreground">Remaining Budget</label>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-muted-foreground/60 font-mono text-lg">RM</span>
+            <span className="text-muted-foreground/50 font-mono text-lg">RM</span>
             <input
               type="number"
               value={budget}
@@ -183,7 +181,7 @@ const InputFlow = ({ onSubmit, onBack }: InputFlowProps) => {
           className="bg-card p-5 rounded-2xl shadow-card mb-3 border border-border"
         >
           <div className="flex items-center gap-2.5 mb-3">
-            <div className="w-8 h-8 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-accent/[0.08] border border-accent/15 flex items-center justify-center">
               <Clock className="w-4 h-4 text-accent" />
             </div>
             <label className="font-label text-muted-foreground">Days Until Next Allowance</label>
@@ -207,7 +205,7 @@ const InputFlow = ({ onSubmit, onBack }: InputFlowProps) => {
           className="bg-card p-5 rounded-2xl shadow-card mb-3 border border-border"
         >
           <div className="flex items-center gap-2.5 mb-3">
-            <div className="w-8 h-8 rounded-lg bg-status-safe/10 border border-status-safe/20 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-status-safe/[0.08] border border-status-safe/15 flex items-center justify-center">
               <Leaf className="w-4 h-4 text-status-safe" />
             </div>
             <label className="font-label text-muted-foreground">Dietary Preference</label>
@@ -219,8 +217,8 @@ const InputFlow = ({ onSubmit, onBack }: InputFlowProps) => {
                 onClick={() => setDietary(option.value)}
                 className={`px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 border font-display ${
                   dietary === option.value
-                    ? 'bg-primary/10 text-primary border-primary/30 shadow-sm'
-                    : 'bg-secondary text-muted-foreground border-border hover:border-muted-foreground/20'
+                    ? 'bg-primary/[0.08] text-primary border-primary/25 shadow-sm'
+                    : 'bg-secondary text-muted-foreground border-border hover:border-muted-foreground/25'
                 }`}
               >
                 {option.label}
@@ -238,12 +236,12 @@ const InputFlow = ({ onSubmit, onBack }: InputFlowProps) => {
           className="bg-card p-5 rounded-2xl shadow-card mb-8 border border-border"
         >
           <div className="flex items-center gap-2.5 mb-1">
-            <div className="w-8 h-8 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-accent/[0.08] border border-accent/15 flex items-center justify-center">
               <Package className="w-4 h-4 text-accent" />
             </div>
             <label className="font-label text-muted-foreground">What&apos;s In Your Pantry?</label>
           </div>
-          <p className="text-xs text-muted-foreground/50 mb-4 ml-10">
+          <p className="text-xs text-muted-foreground/50 mb-4 ml-[46px]">
             Tap items to add. Adjust quantity for better accuracy.
           </p>
 
@@ -258,8 +256,8 @@ const InputFlow = ({ onSubmit, onBack }: InputFlowProps) => {
                   onClick={() => incrementItem(item)}
                   className={`px-3 py-1.5 text-xs rounded-xl transition-all duration-200 border font-medium ${
                     quantity > 0
-                      ? 'bg-primary/15 text-primary border-primary/30 shadow-sm'
-                      : 'bg-secondary text-muted-foreground border-border hover:border-muted-foreground/20'
+                      ? 'bg-primary/[0.1] text-primary border-primary/25 shadow-sm'
+                      : 'bg-secondary text-muted-foreground border-border hover:border-muted-foreground/25'
                   }`}
                 >
                   {quantity > 0 ? `${item} ×${quantity}` : `+ ${item}`}
@@ -275,7 +273,7 @@ const InputFlow = ({ onSubmit, onBack }: InputFlowProps) => {
               onChange={event => setCurrentItem(event.target.value)}
               onKeyDown={event => event.key === 'Enter' && addCustomItem()}
               placeholder="Add custom item..."
-              className="flex-1 bg-secondary rounded-xl px-4 py-2.5 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all border border-border placeholder:text-muted-foreground/30"
+              className="flex-1 bg-secondary rounded-xl px-4 py-2.5 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/15 transition-all border border-border placeholder:text-muted-foreground/30"
             />
             <motion.button
               whileTap={{ scale: 0.95 }}
@@ -300,11 +298,11 @@ const InputFlow = ({ onSubmit, onBack }: InputFlowProps) => {
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -6 }}
-                    className="flex items-center justify-between gap-3 px-3.5 py-2.5 bg-primary/5 border border-primary/10 rounded-xl"
+                    className="flex items-center justify-between gap-3 px-3.5 py-2.5 bg-primary/[0.04] border border-primary/10 rounded-xl"
                   >
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-foreground capitalize">{item}</p>
-                      <p className="text-[11px] text-muted-foreground/60">
+                      <p className="text-[11px] text-muted-foreground/50">
                         {quantity > 1 ? `${quantity} ${item}` : item}
                       </p>
                     </div>
@@ -319,7 +317,7 @@ const InputFlow = ({ onSubmit, onBack }: InputFlowProps) => {
                       <span className="font-mono text-sm font-bold text-foreground min-w-5 text-center">{quantity}</span>
                       <button
                         onClick={() => incrementItem(item)}
-                        className="w-7 h-7 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center justify-center border border-primary/20"
+                        className="w-7 h-7 rounded-lg bg-primary/[0.08] text-primary hover:bg-primary/[0.15] transition-colors flex items-center justify-center border border-primary/15"
                         aria-label={`Increase ${item}`}
                       >
                         <Plus className="w-3 h-3" />

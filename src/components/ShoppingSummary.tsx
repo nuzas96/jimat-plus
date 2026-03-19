@@ -20,7 +20,7 @@ const ShoppingSummary = ({ result, input, onRestart, onBack }: ShoppingSummaryPr
 
   return (
     <div className="min-h-screen flex flex-col items-center px-6 py-10 gradient-surface relative overflow-hidden">
-      <div className="absolute top-1/3 right-0 w-[400px] h-[400px] bg-primary/3 rounded-full blur-3xl" />
+      <div className="absolute top-1/3 right-0 w-[350px] h-[350px] bg-primary/[0.03] rounded-full blur-3xl" />
 
       <div className="max-w-lg w-full relative z-10">
         <motion.button
@@ -42,7 +42,7 @@ const ShoppingSummary = ({ result, input, onRestart, onBack }: ShoppingSummaryPr
         <motion.div
           {...fadeUp}
           transition={{ delay: 0.08, duration: 0.4 }}
-          className="bg-card/50 p-4 rounded-2xl border border-border mb-4"
+          className="bg-card/70 p-4 rounded-2xl border border-border mb-4"
         >
           <div className="flex items-start gap-3">
             <Info className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
@@ -58,7 +58,7 @@ const ShoppingSummary = ({ result, input, onRestart, onBack }: ShoppingSummaryPr
           transition={{ delay: 0.1, duration: 0.45 }}
           className="relative bg-card p-6 rounded-3xl shadow-elevated border-glow mb-4 overflow-hidden"
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-xl" />
+          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/[0.03] rounded-full -translate-y-1/2 translate-x-1/2 blur-xl" />
           <div className="relative">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-11 h-11 rounded-xl gradient-warm flex items-center justify-center shadow-glow">
@@ -95,7 +95,7 @@ const ShoppingSummary = ({ result, input, onRestart, onBack }: ShoppingSummaryPr
               <span className="text-sm text-muted-foreground">Suggested Spend</span>
               <span className="font-mono font-bold text-status-tight">- RM{result.cheapestNextPurchase.estimatedCost.toFixed(2)}</span>
             </div>
-            <div className="flex items-center justify-between p-4 bg-status-safe/5">
+            <div className="flex items-center justify-between p-4 bg-status-safe/[0.04]">
               <span className="text-sm font-bold text-foreground font-display">Remaining</span>
               <span className="font-mono font-bold text-status-safe-foreground text-xl">RM{result.budgetAfterShopping.toFixed(2)}</span>
             </div>
@@ -128,7 +128,7 @@ const ShoppingSummary = ({ result, input, onRestart, onBack }: ShoppingSummaryPr
           className="bg-card p-5 rounded-2xl shadow-card border border-border mb-8"
         >
           <div className="flex items-start gap-3">
-            <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <div className="w-9 h-9 rounded-xl bg-primary/[0.08] border border-primary/15 flex items-center justify-center flex-shrink-0 mt-0.5">
               <Heart className="w-4 h-4 text-primary" />
             </div>
             <div>
