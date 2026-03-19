@@ -1,116 +1,110 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Clock, ShoppingBag, TrendingDown } from 'lucide-react';
+import { ArrowRight, Calendar, AlertTriangle, ShoppingCart, Sparkles } from 'lucide-react';
 
 interface LandingPageProps {
   onStart: () => void;
 }
 
-const VALUE_POINTS = [
-  { icon: Clock, text: 'Know how many days your food can cover' },
-  { icon: TrendingDown, text: 'See what happens if you do nothing' },
-  { icon: ShoppingBag, text: 'Find the cheapest next item to buy' },
+const VALUE_HIGHLIGHTS = [
+  { icon: Calendar, text: 'Estimate how many days your food can still cover', delay: 0.4 },
+  { icon: AlertTriangle, text: 'See the risk before your budget runs out', delay: 0.5 },
+  { icon: ShoppingCart, text: 'Get the cheapest next purchase to stabilize the plan', delay: 0.6 },
 ];
 
 const LandingPage = ({ onStart }: LandingPageProps) => {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-16 gradient-hero relative overflow-hidden">
-      {/* Decorative shapes */}
-      <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-primary/[0.04] blur-3xl" />
-      <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] rounded-full bg-accent/[0.04] blur-3xl" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full border border-primary/[0.06]" />
-
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-16 gradient-surface">
       <motion.div
-        initial={{ opacity: 0, y: 24 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className="max-w-2xl w-full text-center relative z-10"
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="max-w-xl w-full text-center"
       >
-        {/* Brand badge */}
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full border border-primary/15 bg-primary/[0.06] mb-8"
+          transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+          className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-primary/8 border border-primary/15 mb-4"
         >
-          <div className="w-2 h-2 rounded-full bg-primary animate-glow-pulse" />
-          <span className="text-sm font-bold text-primary tracking-wide font-display">JiMAT+</span>
+          <Sparkles className="w-4 h-4 text-primary" />
+          <span className="text-sm font-semibold text-primary tracking-wide">JiMAT+</span>
         </motion.div>
 
-        {/* Tagline */}
         <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.15 }}
-          className="text-xs tracking-[0.25em] text-muted-foreground uppercase mb-5 font-display font-semibold"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+          className="text-xs sm:text-sm uppercase tracking-[0.24em] text-muted-foreground/75 mb-4"
         >
-          Student Food Survival Engine
+          Student Food Budget Survival Planner
         </motion.p>
 
-        {/* Hero headline */}
         <motion.h1
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-          className="font-display text-5xl sm:text-6xl md:text-7xl leading-[0.92] text-foreground mb-6"
+          transition={{ duration: 0.6, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          className="font-display text-4xl sm:text-5xl leading-[1.1] text-foreground mb-5"
+          style={{ textWrap: 'balance' }}
         >
-          Will your food
-          <br />
-          <span className="text-gradient">last until</span>
-          <br />
-          <span className="text-gradient-accent">allowance day?</span>
+          Can your food and budget
+          <span className="text-primary"> really last until allowance day?</span>
         </motion.h1>
 
-        {/* Sub copy */}
         <motion.p
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.35 }}
-          className="text-base sm:text-lg text-muted-foreground max-w-md mx-auto leading-relaxed mb-10"
+          transition={{ duration: 0.5, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+          className="text-base sm:text-lg text-muted-foreground mb-4 max-w-md mx-auto leading-relaxed"
         >
-          Enter what you have. JiMAT+ tells you how far it stretches — and the
-          one move that makes the difference.
+          JiMAT+ helps students turn leftover pantry items and limited ringgit into a practical survival plan for the last stretch before the next allowance.
         </motion.p>
 
-        {/* CTA */}
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.45 }}
-          whileHover={{ scale: 1.03, y: -2 }}
-          whileTap={{ scale: 0.97 }}
-          onClick={onStart}
-          className="inline-flex items-center gap-3 gradient-warm text-primary-foreground px-10 py-4.5 rounded-2xl text-lg font-bold shadow-glow transition-all font-display tracking-tight"
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="text-sm text-muted-foreground/70 mb-10 max-w-sm mx-auto italic"
         >
-          Check My Survival
+          You have not run out yet. JiMAT+ helps you make the next move before things become critical.
+        </motion.p>
+
+        <motion.button
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.35 }}
+          whileHover={{ scale: 1.02, y: -1 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={onStart}
+          className="inline-flex items-center gap-3 gradient-warm text-primary-foreground px-8 py-4 rounded-2xl text-base font-semibold shadow-glow transition-all"
+        >
+          Start My JiMAT+ Check
           <ArrowRight className="w-5 h-5" />
         </motion.button>
 
-        {/* Value points */}
-        <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-xl mx-auto">
-          {VALUE_POINTS.map(({ icon: Icon, text }, i) => (
+        <div className="mt-14 space-y-3 sm:space-y-0 sm:flex sm:flex-col sm:items-center sm:gap-4">
+          {VALUE_HIGHLIGHTS.map(({ icon: Icon, text, delay }) => (
             <motion.div
               key={text}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.55 + i * 0.08 }}
-              className="flex flex-col items-center gap-2.5 p-4 rounded-2xl bg-card/60 border border-border shadow-card"
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay }}
+              className="flex items-center gap-3 text-muted-foreground"
             >
-              <div className="w-10 h-10 rounded-xl bg-primary/[0.08] border border-primary/10 flex items-center justify-center">
-                <Icon className="w-5 h-5 text-primary" />
+              <div className="w-8 h-8 rounded-xl bg-primary/8 flex items-center justify-center flex-shrink-0">
+                <Icon className="w-4 h-4 text-primary" />
               </div>
-              <span className="text-xs text-muted-foreground font-medium text-center leading-snug">{text}</span>
+              <span className="text-sm font-medium">{text}</span>
             </motion.div>
           ))}
         </div>
 
-        {/* Footer */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.85, duration: 0.4 }}
-          className="mt-12 text-xs text-muted-foreground/50 font-medium tracking-widest uppercase"
+          transition={{ delay: 0.7, duration: 0.4 }}
+          className="mt-10 text-xs text-muted-foreground/50 font-medium tracking-wide"
         >
-          No login · Private · Built for students
+          No login | Private | Built for students
         </motion.p>
       </motion.div>
     </div>
