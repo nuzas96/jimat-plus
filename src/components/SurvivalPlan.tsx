@@ -9,15 +9,15 @@ interface SurvivalPlanProps {
 }
 
 const dayAccents = [
-  { border: 'border-primary/25', bg: 'bg-primary/5', badge: 'gradient-warm' },
-  { border: 'border-accent/25', bg: 'bg-accent/5', badge: 'bg-accent' },
-  { border: 'border-status-safe/25', bg: 'bg-status-safe/5', badge: 'bg-status-safe' },
+  { border: 'border-primary/20', bg: 'bg-primary/[0.04]', badge: 'gradient-warm' },
+  { border: 'border-accent/20', bg: 'bg-accent/[0.04]', badge: 'bg-accent' },
+  { border: 'border-status-safe/20', bg: 'bg-status-safe/[0.04]', badge: 'bg-status-safe' },
 ];
 
 const SurvivalPlan = ({ result, onViewShopping, onBack }: SurvivalPlanProps) => {
   return (
     <div className="min-h-screen flex flex-col items-center px-6 py-10 gradient-surface relative overflow-hidden">
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/3 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[250px] bg-primary/[0.03] rounded-full blur-3xl" />
 
       <div className="max-w-lg w-full relative z-10">
         <motion.button
@@ -47,7 +47,7 @@ const SurvivalPlan = ({ result, onViewShopping, onBack }: SurvivalPlanProps) => 
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05, duration: 0.4 }}
-          className="bg-card/50 p-4 rounded-2xl border border-border mb-6"
+          className="bg-card/70 p-4 rounded-2xl border border-border mb-6"
         >
           <div className="flex items-start gap-3">
             <Info className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
@@ -78,11 +78,11 @@ const SurvivalPlan = ({ result, onViewShopping, onBack }: SurvivalPlanProps) => 
                       <span className="font-display text-sm font-bold text-foreground uppercase tracking-wide">Day {meal.day}</span>
                     </div>
                     {meal.estimatedCost > 0 ? (
-                      <span className="font-mono text-xs text-accent font-bold bg-accent/10 px-2.5 py-1 rounded-lg border border-accent/20">
+                      <span className="font-mono text-xs text-accent font-bold bg-accent/[0.08] px-2.5 py-1 rounded-lg border border-accent/15">
                         +RM{meal.estimatedCost.toFixed(2)}
                       </span>
                     ) : (
-                      <span className="text-xs text-status-safe font-bold bg-status-safe/10 px-2.5 py-1 rounded-lg border border-status-safe/20">
+                      <span className="text-xs text-status-safe font-bold bg-status-safe/[0.06] px-2.5 py-1 rounded-lg border border-status-safe/15">
                         Pantry only
                       </span>
                     )}
@@ -120,7 +120,7 @@ const SurvivalPlan = ({ result, onViewShopping, onBack }: SurvivalPlanProps) => 
             </div>
             <div className="flex flex-wrap gap-1.5">
               {result.pantryItemsUsed.map(item => (
-                <span key={item} className="px-2 py-1 bg-status-safe/8 text-status-safe-foreground text-xs rounded-lg font-medium border border-status-safe/15">
+                <span key={item} className="px-2 py-1 bg-status-safe/[0.06] text-status-safe-foreground text-xs rounded-lg font-medium border border-status-safe/15">
                   {item}
                 </span>
               ))}
@@ -133,7 +133,7 @@ const SurvivalPlan = ({ result, onViewShopping, onBack }: SurvivalPlanProps) => 
             </div>
             <div className="flex flex-wrap gap-1.5">
               {result.missingIngredients.length > 0 ? result.missingIngredients.map(item => (
-                <span key={item} className="px-2 py-1 bg-status-tight/8 text-status-tight-foreground text-xs rounded-lg font-medium border border-status-tight/15">
+                <span key={item} className="px-2 py-1 bg-status-tight/[0.06] text-status-tight-foreground text-xs rounded-lg font-medium border border-status-tight/15">
                   {item}
                 </span>
               )) : (

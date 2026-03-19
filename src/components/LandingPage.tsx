@@ -1,22 +1,23 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Shield, TrendingDown, Zap } from 'lucide-react';
+import { ArrowRight, Clock, ShoppingBag, TrendingDown } from 'lucide-react';
 
 interface LandingPageProps {
   onStart: () => void;
 }
 
-const PROOF_POINTS = [
-  { icon: Shield, text: 'Know exactly how many days you can survive' },
-  { icon: TrendingDown, text: 'See the risk before it hits' },
-  { icon: Zap, text: 'Find the one purchase that changes everything' },
+const VALUE_POINTS = [
+  { icon: Clock, text: 'Know how many days your food can cover' },
+  { icon: TrendingDown, text: 'See what happens if you do nothing' },
+  { icon: ShoppingBag, text: 'Find the cheapest next item to buy' },
 ];
 
 const LandingPage = ({ onStart }: LandingPageProps) => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 py-16 gradient-hero relative overflow-hidden">
-      {/* Background orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-primary/5 blur-3xl" />
-      <div className="absolute bottom-1/4 right-1/4 w-72 h-72 rounded-full bg-accent/5 blur-3xl" />
+      {/* Decorative shapes */}
+      <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-primary/[0.04] blur-3xl" />
+      <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] rounded-full bg-accent/[0.04] blur-3xl" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full border border-primary/[0.06]" />
 
       <motion.div
         initial={{ opacity: 0, y: 24 }}
@@ -28,11 +29,11 @@ const LandingPage = ({ onStart }: LandingPageProps) => {
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 mb-6"
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full border border-primary/15 bg-primary/[0.06] mb-8"
         >
           <div className="w-2 h-2 rounded-full bg-primary animate-glow-pulse" />
-          <span className="text-sm font-semibold text-primary tracking-wide font-display">JiMAT+</span>
+          <span className="text-sm font-bold text-primary tracking-wide font-display">JiMAT+</span>
         </motion.div>
 
         {/* Tagline */}
@@ -40,7 +41,7 @@ const LandingPage = ({ onStart }: LandingPageProps) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.15 }}
-          className="text-xs tracking-[0.3em] text-muted-foreground/60 uppercase mb-6 font-display"
+          className="text-xs tracking-[0.25em] text-muted-foreground uppercase mb-5 font-display font-semibold"
         >
           Student Food Survival Engine
         </motion.p>
@@ -50,7 +51,7 @@ const LandingPage = ({ onStart }: LandingPageProps) => {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-          className="font-display text-5xl sm:text-6xl md:text-7xl leading-[0.95] text-foreground mb-6"
+          className="font-display text-5xl sm:text-6xl md:text-7xl leading-[0.92] text-foreground mb-6"
         >
           Will your food
           <br />
@@ -84,30 +85,30 @@ const LandingPage = ({ onStart }: LandingPageProps) => {
           <ArrowRight className="w-5 h-5" />
         </motion.button>
 
-        {/* Proof points */}
-        <div className="mt-16 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10">
-          {PROOF_POINTS.map(({ icon: Icon, text }, i) => (
+        {/* Value points */}
+        <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-xl mx-auto">
+          {VALUE_POINTS.map(({ icon: Icon, text }, i) => (
             <motion.div
               key={text}
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.55 + i * 0.08 }}
-              className="flex items-center gap-3"
+              className="flex flex-col items-center gap-2.5 p-4 rounded-2xl bg-card/60 border border-border shadow-card"
             >
-              <div className="w-8 h-8 rounded-lg bg-card border border-border flex items-center justify-center flex-shrink-0">
-                <Icon className="w-4 h-4 text-primary" />
+              <div className="w-10 h-10 rounded-xl bg-primary/[0.08] border border-primary/10 flex items-center justify-center">
+                <Icon className="w-5 h-5 text-primary" />
               </div>
-              <span className="text-sm text-muted-foreground font-medium">{text}</span>
+              <span className="text-xs text-muted-foreground font-medium text-center leading-snug">{text}</span>
             </motion.div>
           ))}
         </div>
 
-        {/* Footer tag */}
+        {/* Footer */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.85, duration: 0.4 }}
-          className="mt-14 text-xs text-muted-foreground/40 font-medium tracking-widest uppercase"
+          className="mt-12 text-xs text-muted-foreground/50 font-medium tracking-widest uppercase"
         >
           No login · Private · Built for students
         </motion.p>

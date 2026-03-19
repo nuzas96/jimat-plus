@@ -10,9 +10,9 @@ interface ResultsDashboardProps {
 }
 
 const statusConfig = {
-  Safe: { bg: 'bg-status-safe/10', text: 'text-status-safe-foreground', border: 'border-status-safe/30', glow: 'shadow-[0_0_30px_-8px_hsl(155_65%_45%/0.3)]', badge: 'Safe', color: 'text-status-safe' },
-  Tight: { bg: 'bg-status-tight/10', text: 'text-status-tight-foreground', border: 'border-status-tight/30', glow: 'shadow-[0_0_30px_-8px_hsl(36_85%_55%/0.3)]', badge: 'Tight', color: 'text-status-tight' },
-  Critical: { bg: 'bg-status-critical/10', text: 'text-status-critical-foreground', border: 'border-status-critical/30', glow: 'shadow-[0_0_30px_-8px_hsl(0_72%_55%/0.3)]', badge: 'Critical', color: 'text-status-critical' },
+  Safe: { bg: 'bg-status-safe/[0.08]', text: 'text-status-safe-foreground', border: 'border-status-safe/20', glow: 'shadow-[0_0_30px_-8px_hsl(155_55%_35%/0.15)]', badge: 'Safe', color: 'text-status-safe' },
+  Tight: { bg: 'bg-status-tight/[0.08]', text: 'text-status-tight-foreground', border: 'border-status-tight/20', glow: 'shadow-[0_0_30px_-8px_hsl(32_75%_45%/0.15)]', badge: 'Tight', color: 'text-status-tight' },
+  Critical: { bg: 'bg-status-critical/[0.08]', text: 'text-status-critical-foreground', border: 'border-status-critical/20', glow: 'shadow-[0_0_30px_-8px_hsl(0_65%_48%/0.15)]', badge: 'Critical', color: 'text-status-critical' },
 };
 
 const confidenceColors = {
@@ -36,8 +36,7 @@ const ResultsDashboard = ({ result, input, onViewPlan, onBack }: ResultsDashboar
 
   return (
     <div className="min-h-screen flex flex-col items-center px-6 py-10 gradient-surface relative overflow-hidden">
-      {/* Background accent */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/3 rounded-full blur-3xl" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-primary/[0.03] rounded-full blur-3xl" />
 
       <div className="max-w-lg w-full relative z-10">
         <motion.button
@@ -54,14 +53,14 @@ const ResultsDashboard = ({ result, input, onViewPlan, onBack }: ResultsDashboar
           <h2 className="font-display text-3xl sm:text-4xl text-foreground mb-6">Your Verdict</h2>
         </motion.div>
 
-        {/* Hero verdict card */}
+        {/* Hero verdict */}
         <motion.div
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
           className={`relative bg-card rounded-3xl shadow-elevated border ${config.border} p-6 mb-4 overflow-hidden ${config.glow}`}
         >
-          <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
+          <div className="absolute top-0 right-0 w-40 h-40 bg-primary/[0.03] rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
           <div className="relative flex items-center gap-6">
             <div className={`w-28 h-28 rounded-2xl ${config.bg} border ${config.border} flex flex-col items-center justify-center flex-shrink-0`}>
               <div className="font-mono text-4xl font-bold text-foreground animate-count-up">{result.daysCoveredDisplay}</div>
@@ -82,7 +81,7 @@ const ResultsDashboard = ({ result, input, onViewPlan, onBack }: ResultsDashboar
         <motion.div
           {...fadeUp}
           transition={{ delay: 0.16, duration: 0.4 }}
-          className="bg-card/50 p-4 rounded-2xl border border-border mb-4"
+          className="bg-card/70 p-4 rounded-2xl border border-border mb-4"
         >
           <div className="flex items-start gap-3">
             <Info className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
@@ -115,9 +114,9 @@ const ResultsDashboard = ({ result, input, onViewPlan, onBack }: ResultsDashboar
           {...fadeUp}
           transition={{ delay: 0.25, duration: 0.4 }}
           className={`p-4 rounded-2xl mb-4 border ${
-            result.survivalScore === 'Critical' ? 'bg-status-critical/5 border-status-critical/20' :
-            result.survivalScore === 'Tight' ? 'bg-status-tight/5 border-status-tight/20' :
-            'bg-status-safe/5 border-status-safe/20'
+            result.survivalScore === 'Critical' ? 'bg-status-critical/[0.04] border-status-critical/15' :
+            result.survivalScore === 'Tight' ? 'bg-status-tight/[0.04] border-status-tight/15' :
+            'bg-status-safe/[0.04] border-status-safe/15'
           }`}
         >
           <div className="flex items-start gap-3">
@@ -176,14 +175,14 @@ const ResultsDashboard = ({ result, input, onViewPlan, onBack }: ResultsDashboar
               <p className="font-mono text-2xl font-bold text-foreground">
                 {result.recommendationExplainer.coverageSummary.beforeDisplay}
               </p>
-              <span className="text-[10px] text-muted-foreground/60">days</span>
+              <span className="text-[10px] text-muted-foreground/50">days</span>
             </div>
-            <div className="rounded-xl bg-primary/8 p-4 text-center border-glow">
+            <div className="rounded-xl bg-primary/[0.06] p-4 text-center border-glow">
               <span className="text-[10px] uppercase tracking-widest text-primary font-display block mb-1">After</span>
               <p className="font-mono text-2xl font-bold text-primary">
                 {result.recommendationExplainer.coverageSummary.afterDisplay}
               </p>
-              <span className="text-[10px] text-muted-foreground/60">days</span>
+              <span className="text-[10px] text-muted-foreground/50">days</span>
             </div>
           </div>
         </motion.div>
@@ -201,7 +200,7 @@ const ResultsDashboard = ({ result, input, onViewPlan, onBack }: ResultsDashboar
           {result.recommendationExplainer.pantryMealNames.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {result.recommendationExplainer.pantryMealNames.map(mealName => (
-                <span key={mealName} className="rounded-xl bg-status-safe/8 border border-status-safe/20 px-3 py-1.5 text-xs font-medium text-status-safe-foreground">
+                <span key={mealName} className="rounded-xl bg-status-safe/[0.06] border border-status-safe/15 px-3 py-1.5 text-xs font-medium text-status-safe-foreground">
                   {mealName}
                 </span>
               ))}
@@ -225,7 +224,7 @@ const ResultsDashboard = ({ result, input, onViewPlan, onBack }: ResultsDashboar
                   key={option.name}
                   className={`rounded-xl p-3 border ${
                     option.verdict === 'selected'
-                      ? 'border-primary/25 bg-primary/5'
+                      ? 'border-primary/20 bg-primary/[0.04]'
                       : 'border-border bg-secondary/50'
                   }`}
                 >
