@@ -139,10 +139,10 @@ const InputFlow = ({ onSubmit, onBack }: InputFlowProps) => {
             Tell us your current food situation
           </h2>
           <p className="text-muted-foreground text-sm mb-2">
-            JiMAT+ will estimate how far your pantry and budget can stretch before your next allowance.
+            JiMAT+ estimates how far your pantry and budget can stretch.
           </p>
           <p className="text-xs text-muted-foreground/70 mb-8">
-            This is a practical student estimate, not exact inventory tracking. Add quantities when you can for a more believable result.
+            Add quantities when you can for better accuracy.
           </p>
         </motion.div>
 
