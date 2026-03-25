@@ -45,7 +45,7 @@ const ShoppingSummary = ({ result, input, onRestart, onBack }: ShoppingSummaryPr
               <Info className="w-4 h-4 text-primary" />
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              This recommendation is optimized for survival coverage and affordability, not full nutrition planning or exact household inventory.
+              Optimized for coverage and affordability, not full nutrition planning.
             </p>
           </div>
         </motion.div>
