@@ -83,9 +83,9 @@ const ResultsDashboard = ({ result, input, onViewPlan, onBack }: ResultsDashboar
               <Info className="w-4 h-4 text-primary" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-foreground mb-1">How this estimate works</p>
+              <p className="text-sm font-semibold text-foreground mb-1">How this works</p>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                This is a survival estimate, not exact inventory tracking. It combines your pantry items, rough serving assumptions, and remaining budget. Adding quantities like `3 eggs` improves accuracy.
+                A survival estimate based on your pantry, serving assumptions, and remaining budget. Adding quantities like "3 eggs" improves accuracy.
               </p>
             </div>
           </div>
