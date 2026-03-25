@@ -6,9 +6,9 @@ interface LandingPageProps {
 }
 
 const VALUE_HIGHLIGHTS = [
-  { icon: Calendar, text: 'Estimate how many days your food can still cover', delay: 0.4 },
-  { icon: AlertTriangle, text: 'See the risk before your budget runs out', delay: 0.5 },
-  { icon: ShoppingCart, text: 'Get the cheapest next purchase to stabilize the plan', delay: 0.6 },
+  { icon: Calendar, text: 'Know how many days your food can realistically cover', delay: 0.4 },
+  { icon: AlertTriangle, text: 'See what happens if you don\'t act before allowance day', delay: 0.5 },
+  { icon: ShoppingCart, text: 'Find the single cheapest purchase to stabilize your plan', delay: 0.6 },
 ];
 
 const LandingPage = ({ onStart }: LandingPageProps) => {
