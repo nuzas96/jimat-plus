@@ -93,6 +93,8 @@ describe('calculateSurvival', () => {
     }));
 
     expect(result.meals[0]?.name).toBe('Tofu Starter Meal');
+    expect(result.meals).toHaveLength(2);
+    expect(result.meals[1]?.estimatedCost).toBe(0);
     expect(result.missingIngredients).toEqual(['tofu']);
     expect(result.cheapestNextPurchase.mealsUnlocked).toBe(1);
     expect(result.daysCovered).toBe(1.3);

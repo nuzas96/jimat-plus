@@ -426,6 +426,7 @@ function buildThreeDayPlan(
   unlockedMeals: MealTemplate[],
   daysLeft: number,
   cheapestNextPurchase: ShoppingItem,
+  coverageTarget: number,
 ): MealSuggestion[] {
   const planDays = Math.min(daysLeft, 3);
   const meals: MealSuggestion[] = [];
@@ -492,12 +493,16 @@ function buildThreeDayPlan(
 
   if (meals.length === 0 && planDays > 0 && cheapestNextPurchase.estimatedCost > 0) {
     const fallbackMeal = EMPTY_PANTRY_FALLBACKS[normalize(cheapestNextPurchase.name)];
-    meals.push({
-      day: 1,
-      name: fallbackMeal?.name ?? `${cheapestNextPurchase.name} Starter Meal`,
-      ingredients: fallbackMeal?.ingredients ?? [normalize(cheapestNextPurchase.name)],
-      estimatedCost: fallbackMeal?.estimatedCost ?? cheapestNextPurchase.estimatedCost,
-    });
+    const repeatCount = Math.min(planDays, Math.max(1, Math.round(coverageTarget)));
+
+    for (let index = 0; index < repeatCount; index += 1) {
+      meals.push({
+        day: index + 1,
+        name: fallbackMeal?.name ?? `${cheapestNextPurchase.name} Starter Meal`,
+        ingredients: fallbackMeal?.ingredients ?? [normalize(cheapestNextPurchase.name)],
+        estimatedCost: index === 0 ? (fallbackMeal?.estimatedCost ?? cheapestNextPurchase.estimatedCost) : 0,
+      });
+    }
   }
 
   return meals;
@@ -626,6 +631,7 @@ export function calculateSurvival(input: UserInput): SurvivalResult {
     !shouldSkipPurchaseRecommendation && hasAffordablePurchase ? unlockedMeals : [],
     input.daysLeft,
     effectiveNextPurchase,
+    displayedImprovedCoverage,
   );
   const allIngredients = [...new Set(meals.flatMap(meal => meal.ingredients))];
   const pantryItemsUsed = allIngredients.filter(ingredient => hasPantryItem(pantryItems, ingredient));
