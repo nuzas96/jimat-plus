@@ -17,6 +17,8 @@ const fadeUp = {
 const ShoppingSummary = ({ result, input, onRestart, onBack }: ShoppingSummaryProps) => {
   const selectedComparison = result.recommendationExplainer.comparisonItems.find(item => item.verdict === 'selected');
   const coverageChanged = result.recommendationExplainer.coverageSummary.afterDisplay !== result.recommendationExplainer.coverageSummary.beforeDisplay;
+  const hasPurchase = result.cheapestNextPurchase.estimatedCost > 0;
+  const isNoUrgentPurchase = result.cheapestNextPurchase.name === 'No urgent purchase needed';
 
   return (
     <div className="min-h-screen flex flex-col items-center px-6 py-10 gradient-surface">
@@ -32,7 +34,13 @@ const ShoppingSummary = ({ result, input, onRestart, onBack }: ShoppingSummaryPr
 
         <motion.div {...fadeUp} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
           <h2 className="font-display text-2xl sm:text-3xl text-foreground mb-1">JiMAT+ Shopping Summary</h2>
-          <p className="text-sm text-muted-foreground mb-8">One purchase to stabilize your plan.</p>
+          <p className="text-sm text-muted-foreground mb-8">
+            {hasPurchase
+              ? 'One smart move to stabilize your plan without overspending.'
+              : isNoUrgentPurchase
+                ? 'You are already in a stable position for this period.'
+                : 'Your budget is too tight for a helpful purchase right now.'}
+          </p>
         </motion.div>
 
         <motion.div
@@ -45,7 +53,9 @@ const ShoppingSummary = ({ result, input, onRestart, onBack }: ShoppingSummaryPr
               <Info className="w-4 h-4 text-primary" />
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Optimized for coverage and affordability, not full nutrition planning.
+              {hasPurchase
+                ? 'This recommendation is optimized for survival coverage and affordability, not full nutrition planning or exact household inventory.'
+                : 'This summary reflects the safest next step for your current coverage and budget position, not full nutrition planning or exact household inventory.'}
             </p>
           </div>
         </motion.div>
@@ -62,7 +72,7 @@ const ShoppingSummary = ({ result, input, onRestart, onBack }: ShoppingSummaryPr
                 <ShoppingCart className="w-5 h-5 text-primary-foreground" />
               </div>
               <div>
-                <span className="font-label text-primary">Best Next Purchase</span>
+                <span className="font-label text-primary">{hasPurchase ? 'Best Next Purchase' : 'Best Next Step'}</span>
               </div>
             </div>
             <h3 className="text-foreground text-2xl font-bold">{result.cheapestNextPurchase.name}</h3>

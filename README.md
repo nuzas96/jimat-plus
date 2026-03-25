@@ -1,38 +1,54 @@
 # JiMAT+
 
-JiMAT+ is a student food budget survival planner built for PutraHack 2026 under the Food Security theme.
+JiMAT+ is a student food security decision engine built for the PutraHack 2026 preliminary round.
 
-The app helps students answer one urgent question: can their remaining budget and pantry items realistically last until the next allowance?
+It helps students answer one urgent question:
 
-## What It Does
+**Can my remaining budget and pantry items realistically last until my next allowance?**
 
-- estimates how many days the current food situation can cover
-- classifies the situation as `Safe`, `Tight`, or `Critical`
-- explains what happens if the user does nothing
-- recommends the cheapest next purchase that improves the plan
+## What The Prototype Does
+
+- calculates **Estimated Days Covered**
+- assigns a **Survival Score**
+- assigns a **Confidence Level**
+- warns what may happen if the user does nothing
+- recommends the **Best Next Purchase**
 - generates a short survival plan and shopping summary
 
-## Canonical Demo Scenario
+## Locked Demo Scenario
 
-- budget: `RM20`
-- days left: `3`
-- pantry: `rice, eggs, onion, instant noodles`
-- expected story:
-  - `Survival Score: Tight`
-  - `Confidence Level: Medium`
-  - `Estimated Days Covered: 2.8 days`
-  - best next purchase: `Tofu`
+Use this same scenario across the app, deck, and video:
 
-## Tech Notes
+- Remaining Budget: `RM20`
+- Days Left Until Next Allowance: `3`
+- Pantry Items: `rice, eggs, onion, instant noodles`
 
-- Vite + React + TypeScript
-- rule-based scoring engine for reproducible outputs
-- Lovable used for prototype generation and UI acceleration
+Expected result story:
+
+- `Estimated Days Covered: 2.8 days`
+- `Survival Score: Tight`
+- `Confidence Level: Medium`
+- warning that the current plan may not last without adjustment
+- `Best Next Purchase: Tofu`
+- `Tofu price: RM4.50`
+- coverage improves to `3+ days`
+
+## Why This Qualifies Now
+
+JiMAT+ fits the Food Security theme because it addresses a real short-term food security problem for students: unstable access to meals near the end of an allowance cycle. The prototype focuses on affordability, pantry reuse, and practical next-step decisions rather than generic meal browsing.
+
+## Stack
+
+- Vite
+- React
+- TypeScript
+- rule-based scoring engine for deterministic outputs
+- Lovable for prototype generation and UI iteration
 
 ## AI Disclosure
 
-- Lovable: prototype generation and interface scaffolding
-- Codex/OpenAI tools: implementation support, logic refinement, UI polish, and documentation updates
+- Lovable: prototype generation and UI iteration
+- Codex/OpenAI tools: implementation support, logic refinement, UI polish, and documentation support
 
 ## Run Locally
 
@@ -48,3 +64,12 @@ npm test
 npm run build
 npm run lint
 ```
+
+## Roadmap
+
+Later versions can expand into:
+
+- campus-aware food pricing
+- student support or welfare referrals
+- stronger local meal recommendations
+- a backend service for shared data and future scaling

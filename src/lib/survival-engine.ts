@@ -129,6 +129,13 @@ const NO_AFFORDABLE_PURCHASE: ShoppingItem = {
   reason: 'Your remaining budget is below the cost of the cheapest helpful item, so the safest move is to stretch your pantry first and seek support if needed.',
 };
 
+const NO_URGENT_PURCHASE_NEEDED: ShoppingItem = {
+  name: 'No urgent purchase needed',
+  estimatedCost: 0,
+  mealsUnlocked: 0,
+  reason: 'Your current pantry and budget already cover the target period, so you do not need to buy anything right now unless you want extra variety.',
+};
+
 const CURATED_MEALS: MealTemplate[] = [
   {
     name: 'Egg Fried Rice',
@@ -567,38 +574,45 @@ export function calculateSurvival(input: UserInput): SurvivalResult {
           : 'Unlocks additional low-cost meals and improves your chance of covering a hostel-style 3-day stretch.',
       };
 
-  const cheapestNextPurchase: ShoppingItem = selectedPurchase?.candidate ?? fallbackPurchase;
-  const unlockedMeals = selectedPurchase?.unlockedMeals ?? [];
-  const hasAffordablePurchase = cheapestNextPurchase.estimatedCost <= input.budget;
-  const effectiveNextPurchase = hasAffordablePurchase ? cheapestNextPurchase : NO_AFFORDABLE_PURCHASE;
-  const fallbackUnlockedMeals = !selectedPurchase && hasEmptyPantry && hasAffordablePurchase ? 1 : 0;
-  const improvedCoverage = selectedPurchase
-    ? selectedPurchase.coverageAfterPurchase
-    : hasAffordablePurchase
-      ? normalizeCoverage(
-          buildBudgetDrivenCoverage(
-            input.budget - effectiveNextPurchase.estimatedCost,
-            uniquePantryItems([...pantryItems, effectiveNextPurchase.name]),
-            input.dietaryPreference,
-          ) + (fallbackUnlockedMeals > 0 ? buildPurchaseMealBoost(
-            {
-              ...effectiveNextPurchase,
-              dietaryTags: [input.dietaryPreference],
-            } as CandidatePurchase,
-            [],
-            hasEmptyPantry,
-          ) : 0),
-        )
-      : currentCoverage;
-  const displayedImprovedCoverage = Math.max(currentCoverage, improvedCoverage);
-  const coverageImproved = buildCoverageLabel(currentCoverage, displayedImprovedCoverage, input.daysLeft);
-
   let survivalScore: SurvivalStatus = 'Critical';
   if (currentCoverage >= input.daysLeft) {
     survivalScore = 'Safe';
   } else if (currentCoverage >= input.daysLeft * 0.7) {
     survivalScore = 'Tight';
   }
+
+  const cheapestNextPurchase: ShoppingItem = selectedPurchase?.candidate ?? fallbackPurchase;
+  const unlockedMeals = selectedPurchase?.unlockedMeals ?? [];
+  const hasAffordablePurchase = cheapestNextPurchase.estimatedCost <= input.budget;
+  const shouldSkipPurchaseRecommendation = survivalScore === 'Safe';
+  const effectiveNextPurchase = shouldSkipPurchaseRecommendation
+    ? NO_URGENT_PURCHASE_NEEDED
+    : hasAffordablePurchase
+      ? cheapestNextPurchase
+      : NO_AFFORDABLE_PURCHASE;
+  const fallbackUnlockedMeals = !selectedPurchase && hasEmptyPantry && hasAffordablePurchase ? 1 : 0;
+  const improvedCoverage = shouldSkipPurchaseRecommendation
+    ? currentCoverage
+    : selectedPurchase
+      ? selectedPurchase.coverageAfterPurchase
+      : hasAffordablePurchase
+        ? normalizeCoverage(
+            buildBudgetDrivenCoverage(
+              input.budget - effectiveNextPurchase.estimatedCost,
+              uniquePantryItems([...pantryItems, effectiveNextPurchase.name]),
+              input.dietaryPreference,
+            ) + (fallbackUnlockedMeals > 0 ? buildPurchaseMealBoost(
+              {
+                ...effectiveNextPurchase,
+                dietaryTags: [input.dietaryPreference],
+              } as CandidatePurchase,
+              [],
+              hasEmptyPantry,
+            ) : 0),
+          )
+        : currentCoverage;
+  const displayedImprovedCoverage = Math.max(currentCoverage, improvedCoverage);
+  const coverageImproved = buildCoverageLabel(currentCoverage, displayedImprovedCoverage, input.daysLeft);
 
   let confidenceLevel: ConfidenceLevel = 'Low';
   if (survivalScore === 'Safe') {
@@ -607,7 +621,12 @@ export function calculateSurvival(input: UserInput): SurvivalResult {
     confidenceLevel = pantryMeals.length >= 3 || improvedCoverage >= input.daysLeft ? 'Medium' : 'Low';
   }
 
-  const meals = buildThreeDayPlan(pantryMeals, hasAffordablePurchase ? unlockedMeals : [], input.daysLeft, effectiveNextPurchase);
+  const meals = buildThreeDayPlan(
+    pantryMeals,
+    !shouldSkipPurchaseRecommendation && hasAffordablePurchase ? unlockedMeals : [],
+    input.daysLeft,
+    effectiveNextPurchase,
+  );
   const allIngredients = [...new Set(meals.flatMap(meal => meal.ingredients))];
   const pantryItemsUsed = allIngredients.filter(ingredient => hasPantryItem(pantryItems, ingredient));
   const missingIngredients = allIngredients.filter(ingredient => !hasPantryItem(pantryItems, ingredient));
@@ -623,7 +642,19 @@ export function calculateSurvival(input: UserInput): SurvivalResult {
       ? 'Without adjustment, your current food plan may not last until your next allowance.'
       : 'Your situation looks manageable, but staying mindful of spending will help you stay on track.';
 
-  const comparisonItems = selectedPurchase
+  const comparisonItems = shouldSkipPurchaseRecommendation
+    ? [
+        {
+          name: effectiveNextPurchase.name,
+          estimatedCost: 0,
+          mealsUnlocked: 0,
+          coverageAfterPurchase: displayedImprovedCoverage,
+          coverageAfterPurchaseDisplay: buildCoverageDisplay(displayedImprovedCoverage, input.daysLeft),
+          verdict: 'selected' as const,
+          reason: effectiveNextPurchase.reason,
+        },
+      ]
+    : selectedPurchase
     ? purchaseOptions
         .slice()
         .sort((left, right) => compareCandidateRanks(right.rank, left.rank))
@@ -645,7 +676,9 @@ export function calculateSurvival(input: UserInput): SurvivalResult {
         },
       ];
 
-  const purchaseRationale = selectedPurchase
+  const purchaseRationale = shouldSkipPurchaseRecommendation
+    ? 'You are already covering the full target period, so there is no urgent purchase needed right now.'
+    : selectedPurchase
     ? `${selectedPurchase.candidate.name} is the best next purchase because it unlocks ${selectedPurchase.unlockedMeals.length} extra meal option${selectedPurchase.unlockedMeals.length === 1 ? '' : 's'} and moves your coverage ${coverageImproved}.`
     : hasAffordablePurchase
       ? `${effectiveNextPurchase.name} is the safest fallback because it gives you at least one workable low-cost meal without requiring a full grocery restock.`
@@ -664,7 +697,9 @@ export function calculateSurvival(input: UserInput): SurvivalResult {
     totalEstimatedCost: { min: totalCostMin, max: totalCostMax },
     budgetAfterShopping: Math.round((input.budget - effectiveNextPurchase.estimatedCost) * 100) / 100,
     coverageImproved,
-    finalMessage: hasAffordablePurchase
+    finalMessage: shouldSkipPurchaseRecommendation
+      ? 'You are already in a stable position for this period, so no extra purchase is necessary unless you want more variety.'
+      : hasAffordablePurchase
       ? 'You do not need a full grocery restock. One low-cost purchase can make your current food plan more stable.'
       : 'Your budget is too tight for the suggested items right now, so focus on stretching pantry staples and getting support if the gap becomes unsafe.',
     recommendationExplainer: {

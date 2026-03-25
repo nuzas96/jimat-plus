@@ -68,10 +68,12 @@ describe('calculateSurvival', () => {
     }));
 
     expect(result.survivalScore).toBe('Safe');
-    expect(['High', 'Medium']).toContain(result.confidenceLevel);
+    expect(result.confidenceLevel).toBe('High');
     expect(result.daysCovered).toBeGreaterThanOrEqual(4.9);
     expect(result.daysCoveredDisplay).toBe('3+');
     expect(result.coverageImproved).toBe('stays at 3+ days');
+    expect(result.cheapestNextPurchase.name).toBe('No urgent purchase needed');
+    expect(result.cheapestNextPurchase.estimatedCost).toBe(0);
   });
 
   it('filters out non-vegetarian unlocks for vegetarian mode', () => {
