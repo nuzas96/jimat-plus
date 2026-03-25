@@ -65,7 +65,7 @@ const LandingPage = ({ onStart }: LandingPageProps) => {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="text-sm text-muted-foreground/70 mb-10 max-w-sm mx-auto italic"
         >
-          You have not run out yet. JiMAT+ helps you make the next move before things become critical.
+          You haven't run out yet. JiMAT+ helps you act before it becomes critical.
         </motion.p>
 
         <motion.button

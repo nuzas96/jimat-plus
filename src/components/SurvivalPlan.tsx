@@ -135,7 +135,7 @@ const SurvivalPlan = ({ result, onViewShopping, onBack }: SurvivalPlanProps) => 
             RM{result.totalEstimatedCost.min.toFixed(2)} - RM{result.totalEstimatedCost.max.toFixed(2)}
           </span>
           <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
-            This estimate assumes your recommended purchase is paid for once, then reused across the plan where relevant.
+            The recommended purchase is bought once and reused across the plan.
           </p>
         </motion.div>
 

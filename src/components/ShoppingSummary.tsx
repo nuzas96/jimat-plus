@@ -62,7 +62,7 @@ const ShoppingSummary = ({ result, input, onRestart, onBack }: ShoppingSummaryPr
                 <ShoppingCart className="w-5 h-5 text-primary-foreground" />
               </div>
               <div>
-                <span className="font-label text-primary">Best Next Step</span>
+                <span className="font-label text-primary">Best Next Purchase</span>
               </div>
             </div>
             <h3 className="text-foreground text-2xl font-bold">{result.cheapestNextPurchase.name}</h3>
