@@ -36,7 +36,7 @@ const LandingPage = ({ onStart }: LandingPageProps) => {
           transition={{ duration: 0.5, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
           className="text-xs sm:text-sm uppercase tracking-[0.24em] text-muted-foreground/75 mb-4"
         >
-          Student Food Budget Survival Planner
+          Student Food Security Decision Engine
         </motion.p>
 
         <motion.h1
