@@ -110,6 +110,16 @@ const ShoppingSummary = ({ result, input, onRestart, onBack }: ShoppingSummaryPr
           </div>
         </motion.div>
 
+        <motion.div
+          {...fadeUp}
+          transition={{ delay: 0.24, duration: 0.4 }}
+          className="bg-card p-4 rounded-2xl shadow-card border border-border/50 mb-4"
+        >
+          <p className="text-xs uppercase tracking-wider text-muted-foreground">Pricing Context</p>
+          <p className="mt-1 text-sm font-semibold text-foreground">{result.selectedPricingContext.label}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{result.selectedPricingContext.contextNote}</p>
+        </motion.div>
+
         <motion.div {...fadeUp} transition={{ delay: 0.3, duration: 0.4 }} className="grid grid-cols-2 gap-3 mb-4">
           <div className="bg-card p-4 rounded-2xl shadow-card border border-border/50 text-center">
             <span className="font-label text-muted-foreground block mb-2">Meals Unlocked</span>

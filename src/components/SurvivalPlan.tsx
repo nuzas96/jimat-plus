@@ -16,6 +16,9 @@ const dayColors = [
 
 const SurvivalPlan = ({ result, onViewShopping, onBack }: SurvivalPlanProps) => {
   const hasPurchase = result.cheapestNextPurchase.estimatedCost > 0;
+  const targetPlanDays = Math.min(result.recommendationExplainer.coverageSummary.targetDays, 3);
+  const hasPartialPlan = result.meals.length > 0 && result.meals.length < targetPlanDays;
+  const hasNoPlanMeals = result.meals.length === 0;
 
   return (
     <div className="min-h-screen flex flex-col items-center px-6 py-10 gradient-surface">
@@ -43,6 +46,9 @@ const SurvivalPlan = ({ result, onViewShopping, onBack }: SurvivalPlanProps) => 
               ? `${result.recommendationExplainer.coverageSummary.label} after one strategic purchase.`
               : `${result.recommendationExplainer.coverageSummary.label} without any extra purchase.`}
           </p>
+          <p className="text-xs text-muted-foreground/70 mb-4">
+            Pricing context: {result.selectedPricingContext.label}
+          </p>
         </motion.div>
 
         <motion.div
@@ -62,6 +68,26 @@ const SurvivalPlan = ({ result, onViewShopping, onBack }: SurvivalPlanProps) => 
             </p>
           </div>
         </motion.div>
+
+        {(hasPartialPlan || hasNoPlanMeals) && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.08, duration: 0.4 }}
+            className="bg-status-tight/5 p-4 rounded-2xl shadow-card border border-status-tight/20 mb-6"
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-xl bg-status-tight/10 flex items-center justify-center flex-shrink-0">
+                <AlertCircle className="w-4 h-4 text-status-tight" />
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {hasNoPlanMeals
+                  ? 'JiMAT+ cannot build a safe sample meal sequence from your current budget and pantry. Treat this as an emergency state: protect any remaining staples and use the support or next-step guidance immediately.'
+                  : `JiMAT+ is only showing ${result.meals.length} practical day${result.meals.length === 1 ? '' : 's'} here because the current situation does not credibly support a fuller 3-day sample plan.`}
+              </p>
+            </div>
+          </motion.div>
+        )}
 
         <div className="space-y-3 mb-6">
           {result.meals.map((meal, index) => (
@@ -109,6 +135,20 @@ const SurvivalPlan = ({ result, onViewShopping, onBack }: SurvivalPlanProps) => 
             </motion.div>
           ))}
         </div>
+
+        {hasNoPlanMeals && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.12, duration: 0.4 }}
+            className="bg-card rounded-2xl shadow-card border border-border/50 p-5 mb-6"
+          >
+            <p className="text-sm font-semibold text-foreground mb-2">What to do right now</p>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Follow the next-step guidance in your results and shopping summary. JiMAT+ is intentionally not inventing a meal plan here because the current resources do not support a believable one.
+            </p>
+          </motion.div>
+        )}
 
         <motion.div
           initial={{ opacity: 0, y: 8 }}

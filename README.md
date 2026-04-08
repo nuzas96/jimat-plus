@@ -1,6 +1,6 @@
 # JiMAT+
 
-JiMAT+ is a student food security decision engine built for the PutraHack 2026 preliminary round.
+JiMAT+ is a student food security decision engine built for the PutraHack 2026 preliminary round and refined for the grand finale.
 
 It helps students answer one urgent question:
 
@@ -14,6 +14,8 @@ It helps students answer one urgent question:
 - warns what may happen if the user does nothing
 - recommends the **Best Next Purchase**
 - generates a short survival plan and shopping summary
+- supports **pricing contexts** such as `Student-Area Budget Preset`, `Campus Budget Preset`, and `Urban Off-Campus`
+- surfaces **support options** when the situation becomes critical
 
 ## Locked Demo Scenario
 
@@ -35,7 +37,20 @@ Expected result story:
 
 ## Why This Qualifies Now
 
-JiMAT+ fits the Food Security theme because it addresses a real short-term food security problem for students: unstable access to meals near the end of an allowance cycle. The prototype focuses on affordability, pantry reuse, and practical next-step decisions rather than generic meal browsing.
+JiMAT+ fits the Food Security theme because it addresses a real short-term food security problem for students: unstable access to meals near the end of an allowance cycle. The prototype focuses on affordability, pantry reuse, practical next-step decisions, and support escalation rather than generic meal browsing.
+
+## Finals Architecture
+
+- React + TypeScript frontend for the guided assessment flow
+- structured finals data layer for meals, purchase candidates, support resources, and pricing contexts
+- deterministic recommendation engine with context-aware pricing
+- local assessment logging for internal demo analytics and proof packaging
+
+## Finals Proof Notes
+
+- `Student-Area Budget Preset` is a manually maintained finals-demo pricing preset calibrated around student-accessible shops near the UniKL MIIT area
+- validation, pricing proof, comparison, and commercial viability should be presented in the finals deck rather than in the public app UI
+- user-facing claims should stay modest and exact: small-sample early validation, not large-scale market validation
 
 ## Stack
 
@@ -69,7 +84,7 @@ npm run lint
 
 Later versions can expand into:
 
-- campus-aware food pricing
-- student support or welfare referrals
+- admin-managed datasets and reporting
+- deeper campus-specific support integrations
 - stronger local meal recommendations
-- a backend service for shared data and future scaling
+- a backend service for shared data and multi-campus scaling

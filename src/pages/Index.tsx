@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
 import LandingPage from '@/components/LandingPage';
 import InputFlow from '@/components/InputFlow';
 import CalculatingScreen from '@/components/CalculatingScreen';
@@ -8,6 +9,8 @@ import SurvivalPlan from '@/components/SurvivalPlan';
 import ShoppingSummary from '@/components/ShoppingSummary';
 import { UserInput, SurvivalResult } from '@/lib/types';
 import { calculateSurvival } from '@/lib/survival-engine';
+import { getFinalsCatalog } from '@/lib/data-api';
+import { appendAssessmentLog } from '@/lib/assessment-log';
 
 type Screen = 'landing' | 'input' | 'calculating' | 'results' | 'plan' | 'shopping';
 
@@ -15,13 +18,32 @@ const Index = () => {
   const [screen, setScreen] = useState<Screen>('landing');
   const [input, setInput] = useState<UserInput | null>(null);
   const [result, setResult] = useState<SurvivalResult | null>(null);
+  const { data: catalog } = useQuery({
+    queryKey: ['finals-catalog'],
+    queryFn: getFinalsCatalog,
+  });
 
   const handleSubmit = useCallback((userInput: UserInput) => {
+    if (!catalog) {
+      return;
+    }
+
     setInput(userInput);
     setScreen('calculating');
-    const survivalResult = calculateSurvival(userInput);
+    const survivalResult = calculateSurvival(userInput, catalog);
     setResult(survivalResult);
-  }, []);
+    appendAssessmentLog({
+      timestamp: new Date().toISOString(),
+      pricingContext: survivalResult.selectedPricingContext.label,
+      budget: userInput.budget,
+      daysLeft: userInput.daysLeft,
+      pantryItemCount: survivalResult.analytics.pantryItemCount,
+      survivalScore: survivalResult.survivalScore,
+      recommendationName: survivalResult.cheapestNextPurchase.name,
+      coverageBefore: survivalResult.daysCovered,
+      coverageAfter: survivalResult.recommendationExplainer.coverageSummary.after,
+    });
+  }, [catalog]);
 
   const handleCalcComplete = useCallback(() => {
     setScreen('results');

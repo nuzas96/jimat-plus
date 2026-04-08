@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { AlertTriangle, ArrowRight, BarChart3, ChefHat, ChevronLeft, Info, Scale, ShoppingBag, TrendingDown, Zap } from 'lucide-react';
+import { AlertTriangle, ArrowRight, BarChart3, ChefHat, ChevronLeft, HeartHandshake, Info, MapPinned, Scale, ShoppingBag, TrendingDown, Zap } from 'lucide-react';
 import { SurvivalResult, UserInput } from '@/lib/types';
 
 interface ResultsDashboardProps {
@@ -91,6 +91,22 @@ const ResultsDashboard = ({ result, input, onViewPlan, onBack }: ResultsDashboar
           </div>
         </motion.div>
 
+        <motion.div
+          {...fadeUp}
+          transition={{ delay: 0.18, duration: 0.4 }}
+          className="bg-card p-4 rounded-2xl shadow-card border border-border/50 mb-4"
+        >
+          <div className="flex items-start gap-3">
+            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <MapPinned className="w-4 h-4 text-primary" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-foreground mb-1">{result.recommendationExplainer.selectedPricingContextLabel}</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">{result.recommendationExplainer.selectedPricingContextNote}</p>
+            </div>
+          </div>
+        </motion.div>
+
         <motion.div {...fadeUp} transition={{ delay: 0.2, duration: 0.4 }} className="grid grid-cols-2 gap-3 mb-4">
           <div className="bg-card p-4 rounded-2xl shadow-card border border-border/50">
             <div className="flex items-center gap-2 mb-2">
@@ -160,11 +176,27 @@ const ResultsDashboard = ({ result, input, onViewPlan, onBack }: ResultsDashboar
         >
           <div className="flex items-center gap-2 mb-3">
             <Scale className="w-4 h-4 text-primary" />
-            <span className="font-label text-foreground">Coverage Impact</span>
+            <span className="font-label text-foreground">Why JiMAT+ Chose This</span>
           </div>
-          <p className="text-xs text-muted-foreground leading-relaxed mb-4">
-            {result.recommendationExplainer.purchaseRationale}
-          </p>
+          <div className="space-y-3">
+            <div className="rounded-xl bg-muted/40 p-3">
+              <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Pantry signal</p>
+              <p className="mt-1 text-sm text-foreground">
+                {result.recommendationExplainer.pantryMealCount > 0
+                  ? `${result.recommendationExplainer.pantryMealCount} pantry-supported meal options were detected before any purchase.`
+                  : 'No full pantry-supported meals were detected yet, so the engine looked for the cheapest stabilizing action.'}
+              </p>
+            </div>
+            <div className="rounded-xl bg-muted/40 p-3">
+              <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Unlock ingredient</p>
+              <p className="mt-1 text-sm text-foreground">
+                Missing ingredient with the strongest low-cost impact: <span className="font-semibold capitalize">{result.recommendationExplainer.selectedMissingIngredient ?? 'none'}</span>.
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {result.recommendationExplainer.purchaseRationale}
+            </p>
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-xl bg-muted/50 p-4 text-center border border-border/30">
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold block mb-1">Before</span>
@@ -181,6 +213,15 @@ const ResultsDashboard = ({ result, input, onViewPlan, onBack }: ResultsDashboar
               <span className="text-[10px] text-muted-foreground">days</span>
             </div>
           </div>
+          {result.recommendationExplainer.whyAlternativesLost.length > 0 && (
+            <div className="mt-3 space-y-2">
+              {result.recommendationExplainer.whyAlternativesLost.map(reason => (
+                <p key={reason} className="text-xs text-muted-foreground leading-relaxed">
+                  {reason}
+                </p>
+              ))}
+            </div>
+          )}
         </motion.div>
 
         <motion.div
@@ -232,6 +273,28 @@ const ResultsDashboard = ({ result, input, onViewPlan, onBack }: ResultsDashboar
                   <p className="text-[11px] text-muted-foreground mt-1">
                     {option.mealsUnlocked} meal{option.mealsUnlocked === 1 ? '' : 's'} | {option.coverageAfterPurchaseDisplay} days
                   </p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {result.supportRecommendations.length > 0 && (
+          <motion.div
+            {...fadeUp}
+            transition={{ delay: 0.48, duration: 0.4 }}
+            className="bg-card p-5 rounded-2xl shadow-card border border-status-critical/20 mb-8"
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <HeartHandshake className="w-4 h-4 text-status-critical" />
+              <span className="font-label text-foreground">Support Options</span>
+            </div>
+            <div className="space-y-3">
+              {result.supportRecommendations.map(resource => (
+                <div key={resource.id} className="rounded-xl border border-status-critical/15 bg-status-critical/5 p-3">
+                  <p className="text-sm font-semibold text-foreground">{resource.title}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{resource.actionText}</p>
+                  {resource.contactInfo && <p className="mt-2 text-[11px] text-muted-foreground/80">{resource.contactInfo}</p>}
                 </div>
               ))}
             </div>

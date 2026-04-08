@@ -1,27 +1,22 @@
 import {
   ConfidenceLevel,
   DietaryPreference,
+  FinalsCatalog,
   MealSuggestion,
+  MealTemplate,
+  PricingContext,
+  PurchaseCandidate,
   PurchaseComparison,
   ShoppingItem,
+  SupportResource,
   SurvivalResult,
   SurvivalStatus,
   UserInput,
-} from './types';
-
-interface MealTemplate {
-  name: string;
-  ingredients: string[];
-  dietaryTags: DietaryPreference[];
-  isLowCost: boolean;
-}
-
-interface CandidatePurchase extends ShoppingItem {
-  dietaryTags: DietaryPreference[];
-}
+} from '@/lib/types';
+import { DEFAULT_PRICING_CONTEXT_ID, finalsCatalog } from '@/lib/finals-data';
 
 interface PurchaseOption {
-  candidate: CandidatePurchase;
+  candidate: PurchaseCandidate;
   unlockedMeals: MealTemplate[];
   rank: [number, number, number, string];
   coverageAfterPurchase: number;
@@ -54,44 +49,6 @@ const PANTRY_COST_REDUCTION_RULES: Array<{
   { ingredients: ['instant noodles', 'bread'], discount: 0.3 },
   { ingredients: ['onion', 'garlic', 'soy sauce', 'oil'], discount: 0.2 },
   { ingredients: ['cabbage'], discount: 0.2 },
-];
-
-const PURCHASE_CANDIDATES: CandidatePurchase[] = [
-  {
-    name: 'Tofu',
-    estimatedCost: 4.5,
-    mealsUnlocked: 3,
-    reason: 'Unlocks additional low-cost meals and improves your chance of covering a hostel-style 3-day stretch.',
-    dietaryTags: ['no-preference', 'vegetarian', 'halal-friendly', 'low-cost-only'],
-  },
-  {
-    name: 'Bread',
-    estimatedCost: 3.5,
-    mealsUnlocked: 1,
-    reason: 'Adds one quick backup meal, but improves coverage less than tofu for the same 3-day allowance gap.',
-    dietaryTags: ['no-preference', 'vegetarian', 'halal-friendly', 'low-cost-only'],
-  },
-  {
-    name: 'Cabbage',
-    estimatedCost: 4,
-    mealsUnlocked: 1,
-    reason: 'Adds one cheap vegetable-based meal, but gives less overall coverage than tofu in this student-budget scenario.',
-    dietaryTags: ['no-preference', 'vegetarian', 'halal-friendly', 'low-cost-only'],
-  },
-  {
-    name: 'Eggs',
-    estimatedCost: 4,
-    mealsUnlocked: 1,
-    reason: 'Adds a flexible protein option, but unlocks fewer new meals than tofu with the current pantry.',
-    dietaryTags: ['no-preference', 'vegetarian', 'halal-friendly', 'low-cost-only'],
-  },
-  {
-    name: 'Sardines',
-    estimatedCost: 6.5,
-    mealsUnlocked: 1,
-    reason: 'Supports one filling rice meal, but costs more than lower-cost alternatives near campus.',
-    dietaryTags: ['no-preference', 'halal-friendly'],
-  },
 ];
 
 const EMPTY_PANTRY_FALLBACKS: Record<string, FallbackMeal> = {
@@ -136,63 +93,6 @@ const NO_URGENT_PURCHASE_NEEDED: ShoppingItem = {
   reason: 'Your current pantry and budget already cover the target period, so you do not need to buy anything right now unless you want extra variety.',
 };
 
-const CURATED_MEALS: MealTemplate[] = [
-  {
-    name: 'Egg Fried Rice',
-    ingredients: ['rice', 'eggs', 'onion'],
-    dietaryTags: ['no-preference', 'vegetarian', 'halal-friendly', 'low-cost-only'],
-    isLowCost: true,
-  },
-  {
-    name: 'Instant Noodles with Egg',
-    ingredients: ['instant noodles', 'eggs'],
-    dietaryTags: ['no-preference', 'vegetarian', 'halal-friendly', 'low-cost-only'],
-    isLowCost: true,
-  },
-  {
-    name: 'Onion Omelette with Rice',
-    ingredients: ['rice', 'eggs', 'onion'],
-    dietaryTags: ['no-preference', 'vegetarian', 'halal-friendly', 'low-cost-only'],
-    isLowCost: true,
-  },
-  {
-    name: 'Plain Rice with Onion',
-    ingredients: ['rice', 'onion'],
-    dietaryTags: ['no-preference', 'vegetarian', 'halal-friendly', 'low-cost-only'],
-    isLowCost: true,
-  },
-  {
-    name: 'Tofu Rice Bowl',
-    ingredients: ['rice', 'tofu', 'onion'],
-    dietaryTags: ['no-preference', 'vegetarian', 'halal-friendly', 'low-cost-only'],
-    isLowCost: true,
-  },
-  {
-    name: 'Tofu Stir Fry with Rice',
-    ingredients: ['rice', 'tofu', 'onion'],
-    dietaryTags: ['no-preference', 'vegetarian', 'halal-friendly', 'low-cost-only'],
-    isLowCost: true,
-  },
-  {
-    name: 'Vegetable Soup with Rice',
-    ingredients: ['rice', 'cabbage', 'onion'],
-    dietaryTags: ['no-preference', 'vegetarian', 'halal-friendly', 'low-cost-only'],
-    isLowCost: true,
-  },
-  {
-    name: 'Toast with Egg',
-    ingredients: ['bread', 'eggs'],
-    dietaryTags: ['no-preference', 'vegetarian', 'halal-friendly', 'low-cost-only'],
-    isLowCost: true,
-  },
-  {
-    name: 'Sardine Rice',
-    ingredients: ['rice', 'sardines'],
-    dietaryTags: ['no-preference', 'halal-friendly'],
-    isLowCost: false,
-  },
-];
-
 const PANTRY_SERVING_PROFILES: Record<string, PantryServingProfile> = {
   rice: { servings: 4, isStaple: true },
   bread: { servings: 3, isStaple: true },
@@ -209,6 +109,10 @@ const PANTRY_SERVING_PROFILES: Record<string, PantryServingProfile> = {
 
 function normalize(value: string): string {
   return value.toLowerCase().trim();
+}
+
+function toOneDecimal(value: number): number {
+  return Math.round(value * 10) / 10;
 }
 
 function extractExplicitQuantity(item: string): number | null {
@@ -241,7 +145,7 @@ function mealMatchesPreference(meal: MealTemplate, dietaryPreference: DietaryPre
   return meal.dietaryTags.includes(dietaryPreference);
 }
 
-function purchaseMatchesPreference(purchase: CandidatePurchase, dietaryPreference: DietaryPreference): boolean {
+function purchaseMatchesPreference(purchase: PurchaseCandidate, dietaryPreference: DietaryPreference): boolean {
   if (dietaryPreference === 'no-preference') {
     return true;
   }
@@ -269,10 +173,41 @@ function pantryItemsHelpPreference(
   return ingredients.some(ingredient => hasPantryItem(pantryItems, ingredient));
 }
 
+function getPricingContext(pricingContextId: string | undefined, catalog: FinalsCatalog): PricingContext {
+  return catalog.pricingContexts.find(context => context.id === pricingContextId)
+    ?? catalog.pricingContexts.find(context => context.id === DEFAULT_PRICING_CONTEXT_ID)
+    ?? catalog.pricingContexts[0];
+}
+
+function applyPricingContextToCandidates(
+  purchaseCandidates: PurchaseCandidate[],
+  pricingContext: PricingContext,
+): PurchaseCandidate[] {
+  return purchaseCandidates.map(candidate => ({
+    ...candidate,
+    estimatedCost: pricingContext.ingredientPriceOverrides[normalize(candidate.name)] ?? candidate.estimatedCost,
+  }));
+}
+
+function buildPricingPressure(pricingContext: PricingContext, baseCandidates: PurchaseCandidate[]): number {
+  const candidateDeltas = baseCandidates.map(candidate => {
+    const override = pricingContext.ingredientPriceOverrides[normalize(candidate.name)];
+    if (!override || candidate.estimatedCost <= 0) {
+      return 0;
+    }
+
+    return (override - candidate.estimatedCost) / candidate.estimatedCost;
+  });
+
+  const averageDelta = candidateDeltas.reduce((sum, delta) => sum + delta, 0) / Math.max(candidateDeltas.length, 1);
+  return averageDelta * 0.35;
+}
+
 function buildBudgetDrivenCoverage(
   budget: number,
   pantryItems: string[],
   dietaryPreference: DietaryPreference,
+  pricingPressure: number,
 ): number {
   if (budget <= 0) {
     return 0;
@@ -287,7 +222,8 @@ function buildBudgetDrivenCoverage(
       ? sum + rule.discount
       : sum;
   }, 0);
-  const effectiveDailyCost = Math.max(MIN_DAILY_FOOD_COST, BASE_DAILY_FOOD_COST - pantryDiscount);
+  const dailyCostFloor = MIN_DAILY_FOOD_COST * (1 + Math.max(pricingPressure, -0.1));
+  const effectiveDailyCost = Math.max(dailyCostFloor, BASE_DAILY_FOOD_COST * (1 + pricingPressure) - pantryDiscount);
   return toOneDecimal(budget / effectiveDailyCost);
 }
 
@@ -333,10 +269,6 @@ function normalizeCoverage(daysCovered: number): number {
   return toOneDecimal(Math.max(daysCovered, 0));
 }
 
-function toOneDecimal(value: number): number {
-  return Math.round(value * 10) / 10;
-}
-
 function buildCoverageDisplay(daysCovered: number, targetDays: number): string {
   const normalizedCoverage = normalizeCoverage(daysCovered);
   return normalizedCoverage >= targetDays ? `${targetDays}+` : `${normalizedCoverage}`;
@@ -356,7 +288,7 @@ function buildCoverageLabel(before: number, after: number, targetDays: number): 
 }
 
 function buildCandidateRank(
-  candidate: CandidatePurchase,
+  candidate: PurchaseCandidate,
   coverageAfterPurchase: number,
   unlockedMeals: MealTemplate[],
 ): [number, number, number, string] {
@@ -381,8 +313,8 @@ function compareCandidateRanks(a: [number, number, number, string], b: [number, 
   return 0;
 }
 
-function buildLocalContextNote(daysLeft: number): string {
-  return `This recommendation assumes a Malaysian student trying to stretch simple pantry staples across the last ${daysLeft} day${daysLeft === 1 ? '' : 's'} before the next allowance.`;
+function buildLocalContextNote(daysLeft: number, pricingContext: PricingContext): string {
+  return `This recommendation assumes a Malaysian student trying to stretch simple pantry staples across the last ${daysLeft} day${daysLeft === 1 ? '' : 's'} before the next allowance in the ${pricingContext.label} pricing context.`;
 }
 
 function buildPurchaseComparison(
@@ -402,7 +334,7 @@ function buildPurchaseComparison(
 }
 
 function buildPurchaseMealBoost(
-  candidate: CandidatePurchase,
+  candidate: PurchaseCandidate,
   unlockedMeals: MealTemplate[],
   hasEmptyPantry: boolean,
 ): number {
@@ -429,12 +361,20 @@ function buildThreeDayPlan(
   coverageTarget: number,
 ): MealSuggestion[] {
   const planDays = Math.min(daysLeft, 3);
+  const achievablePlanDays = Math.min(
+    planDays,
+    coverageTarget <= 0 ? 0 : Math.max(1, Math.ceil(Math.min(coverageTarget, planDays))),
+  );
   const meals: MealSuggestion[] = [];
   const usedMealNames = new Set<string>();
   let purchaseCostApplied = false;
 
+  if (achievablePlanDays === 0) {
+    return meals;
+  }
+
   for (const pantryMeal of pantryMeals) {
-    if (meals.length >= Math.max(0, planDays - 1)) {
+    if (meals.length >= Math.max(0, achievablePlanDays - 1)) {
       break;
     }
 
@@ -450,7 +390,7 @@ function buildThreeDayPlan(
   const preferredUnlockedMeal = unlockedMeals.find(meal => meal.name === 'Tofu Rice Bowl')
     ?? unlockedMeals.find(meal => !usedMealNames.has(meal.name));
 
-  if (planDays > 0 && preferredUnlockedMeal) {
+  if (achievablePlanDays > 0 && preferredUnlockedMeal) {
     meals.push({
       day: meals.length + 1,
       name: preferredUnlockedMeal.name,
@@ -461,7 +401,7 @@ function buildThreeDayPlan(
     purchaseCostApplied = purchaseCostApplied || cheapestNextPurchase.estimatedCost > 0;
   }
 
-  while (meals.length < planDays) {
+  while (meals.length < achievablePlanDays) {
     const fallbackPantryMeal = pantryMeals.find(meal => !usedMealNames.has(meal.name))
       ?? pantryMeals[0];
 
@@ -491,9 +431,9 @@ function buildThreeDayPlan(
     purchaseCostApplied = purchaseCostApplied || cheapestNextPurchase.estimatedCost > 0;
   }
 
-  if (meals.length === 0 && planDays > 0 && cheapestNextPurchase.estimatedCost > 0) {
+  if (meals.length === 0 && achievablePlanDays > 0 && cheapestNextPurchase.estimatedCost > 0) {
     const fallbackMeal = EMPTY_PANTRY_FALLBACKS[normalize(cheapestNextPurchase.name)];
-    const repeatCount = Math.min(planDays, Math.max(1, Math.round(coverageTarget)));
+    const repeatCount = achievablePlanDays;
 
     for (let index = 0; index < repeatCount; index += 1) {
       meals.push({
@@ -508,10 +448,41 @@ function buildThreeDayPlan(
   return meals;
 }
 
-export function calculateSurvival(input: UserInput): SurvivalResult {
+function buildAlternativeLossReasons(
+  purchaseOptions: PurchaseOption[],
+  selectedPurchase: PurchaseOption | undefined,
+): string[] {
+  if (!selectedPurchase) {
+    return [];
+  }
+
+  return purchaseOptions
+    .filter(option => option.candidate.name !== selectedPurchase.candidate.name)
+    .slice(0, 2)
+    .map(option => `${option.candidate.name} was considered, but it unlocked fewer affordable meals or improved coverage less than ${selectedPurchase.candidate.name}.`);
+}
+
+function buildSupportRecommendations(
+  survivalScore: SurvivalStatus,
+  supportResources: SupportResource[],
+): SupportResource[] {
+  if (survivalScore !== 'Critical') {
+    return [];
+  }
+
+  return supportResources.filter(resource => resource.triggerStatuses.includes('Critical'));
+}
+
+export function calculateSurvival(
+  input: UserInput,
+  catalog: FinalsCatalog = finalsCatalog,
+): SurvivalResult {
   const pantryItems = uniquePantryItems(input.pantryItems);
   const hasEmptyPantry = pantryItems.length === 0;
-  const filteredMeals = CURATED_MEALS.filter(meal => mealMatchesPreference(meal, input.dietaryPreference));
+  const pricingContext = getPricingContext(input.pricingContext, catalog);
+  const pricingPressure = buildPricingPressure(pricingContext, catalog.purchaseCandidates);
+  const filteredMeals = catalog.meals.filter(meal => mealMatchesPreference(meal, input.dietaryPreference));
+  const contextualPurchases = applyPricingContextToCandidates(catalog.purchaseCandidates, pricingContext);
 
   const pantryMeals = filteredMeals
     .filter(meal => meal.ingredients.every(ingredient => hasPantryItem(pantryItems, ingredient)))
@@ -522,10 +493,11 @@ export function calculateSurvival(input: UserInput): SurvivalResult {
     input.budget,
     pantryItems,
     input.dietaryPreference,
+    pricingPressure,
   );
   const currentCoverage = normalizeCoverage(Math.max(pantryCoverage, budgetDrivenCoverage));
 
-  const purchaseOptions = PURCHASE_CANDIDATES
+  const purchaseOptions = contextualPurchases
     .filter(candidate => candidate.estimatedCost <= input.budget && purchaseMatchesPreference(candidate, input.dietaryPreference))
     .map(candidate => {
       const unlockedMeals = filteredMeals.filter(meal => {
@@ -544,6 +516,7 @@ export function calculateSurvival(input: UserInput): SurvivalResult {
           input.budget - candidate.estimatedCost,
           purchasePantryItems,
           input.dietaryPreference,
+          pricingPressure,
         ) + buildPurchaseMealBoost(candidate, sortedUnlockedMeals, hasEmptyPantry),
       );
 
@@ -557,9 +530,9 @@ export function calculateSurvival(input: UserInput): SurvivalResult {
     .filter(option => option.unlockedMeals.length > 0);
 
   const selectedPurchase = purchaseOptions.slice().sort((left, right) => compareCandidateRanks(right.rank, left.rank))[0];
-  const fallbackPurchaseCandidate = PURCHASE_CANDIDATES.find(candidate =>
+  const fallbackPurchaseCandidate = contextualPurchases.find(candidate =>
     normalize(candidate.name) === 'tofu' && candidate.estimatedCost <= input.budget && purchaseMatchesPreference(candidate, input.dietaryPreference),
-  ) ?? PURCHASE_CANDIDATES.find(candidate =>
+  ) ?? contextualPurchases.find(candidate =>
     candidate.estimatedCost <= input.budget && purchaseMatchesPreference(candidate, input.dietaryPreference),
   );
   const fallbackPurchase = fallbackPurchaseCandidate
@@ -572,7 +545,7 @@ export function calculateSurvival(input: UserInput): SurvivalResult {
       }
     : {
         name: 'Tofu',
-        estimatedCost: 4.5,
+        estimatedCost: pricingContext.ingredientPriceOverrides.tofu ?? 4.5,
         mealsUnlocked: hasEmptyPantry ? 1 : 3,
         reason: hasEmptyPantry
           ? 'Gives you one simple low-cost meal to stabilize the situation before your next allowance.'
@@ -606,11 +579,12 @@ export function calculateSurvival(input: UserInput): SurvivalResult {
               input.budget - effectiveNextPurchase.estimatedCost,
               uniquePantryItems([...pantryItems, effectiveNextPurchase.name]),
               input.dietaryPreference,
+              pricingPressure,
             ) + (fallbackUnlockedMeals > 0 ? buildPurchaseMealBoost(
               {
                 ...effectiveNextPurchase,
                 dietaryTags: [input.dietaryPreference],
-              } as CandidatePurchase,
+              } as PurchaseCandidate,
               [],
               hasEmptyPantry,
             ) : 0),
@@ -661,34 +635,36 @@ export function calculateSurvival(input: UserInput): SurvivalResult {
         },
       ]
     : selectedPurchase
-    ? purchaseOptions
-        .slice()
-        .sort((left, right) => compareCandidateRanks(right.rank, left.rank))
-        .slice(0, 3)
-        .map(option => buildPurchaseComparison(
-          option,
-          option.candidate.name === selectedPurchase.candidate.name ? 'selected' : 'alternative',
-          input.daysLeft,
-        ))
-    : [
-        {
-          name: effectiveNextPurchase.name,
-          estimatedCost: effectiveNextPurchase.estimatedCost,
-          mealsUnlocked: hasAffordablePurchase ? fallbackUnlockedMeals || effectiveNextPurchase.mealsUnlocked : 0,
-          coverageAfterPurchase: displayedImprovedCoverage,
-          coverageAfterPurchaseDisplay: buildCoverageDisplay(displayedImprovedCoverage, input.daysLeft),
-          verdict: 'selected' as const,
-          reason: effectiveNextPurchase.reason,
-        },
-      ];
+      ? purchaseOptions
+          .slice()
+          .sort((left, right) => compareCandidateRanks(right.rank, left.rank))
+          .slice(0, 3)
+          .map(option => buildPurchaseComparison(
+            option,
+            option.candidate.name === selectedPurchase.candidate.name ? 'selected' : 'alternative',
+            input.daysLeft,
+          ))
+      : [
+          {
+            name: effectiveNextPurchase.name,
+            estimatedCost: effectiveNextPurchase.estimatedCost,
+            mealsUnlocked: hasAffordablePurchase ? fallbackUnlockedMeals || effectiveNextPurchase.mealsUnlocked : 0,
+            coverageAfterPurchase: displayedImprovedCoverage,
+            coverageAfterPurchaseDisplay: buildCoverageDisplay(displayedImprovedCoverage, input.daysLeft),
+            verdict: 'selected' as const,
+            reason: effectiveNextPurchase.reason,
+          },
+        ];
 
   const purchaseRationale = shouldSkipPurchaseRecommendation
     ? 'You are already covering the full target period, so there is no urgent purchase needed right now.'
     : selectedPurchase
-    ? `${selectedPurchase.candidate.name} is the best next purchase because it unlocks ${selectedPurchase.unlockedMeals.length} extra meal option${selectedPurchase.unlockedMeals.length === 1 ? '' : 's'} and moves your coverage ${coverageImproved}.`
-    : hasAffordablePurchase
-      ? `${effectiveNextPurchase.name} is the safest fallback because it gives you at least one workable low-cost meal without requiring a full grocery restock.`
-      : 'No realistic purchase fits this budget, so the safest plan is to protect your remaining pantry and seek free or subsidized food support if needed.';
+      ? `${selectedPurchase.candidate.name} is the best next purchase because it unlocks ${selectedPurchase.unlockedMeals.length} extra meal option${selectedPurchase.unlockedMeals.length === 1 ? '' : 's'} and moves your coverage ${coverageImproved}.`
+      : hasAffordablePurchase
+        ? `${effectiveNextPurchase.name} is the safest fallback because it gives you at least one workable low-cost meal without requiring a full grocery restock.`
+        : 'No realistic purchase fits this budget, so the safest plan is to protect your remaining pantry and seek free or subsidized food support if needed.';
+
+  const supportRecommendations = buildSupportRecommendations(survivalScore, catalog.supportResources);
 
   return {
     survivalScore,
@@ -706,12 +682,12 @@ export function calculateSurvival(input: UserInput): SurvivalResult {
     finalMessage: shouldSkipPurchaseRecommendation
       ? 'You are already in a stable position for this period, so no extra purchase is necessary unless you want more variety.'
       : hasAffordablePurchase
-      ? 'You do not need a full grocery restock. One low-cost purchase can make your current food plan more stable.'
-      : 'Your budget is too tight for the suggested items right now, so focus on stretching pantry staples and getting support if the gap becomes unsafe.',
+        ? 'You do not need a full grocery restock. One low-cost purchase can make your current food plan more stable.'
+        : 'Your budget is too tight for the suggested items right now, so focus on stretching pantry staples and getting support if the gap becomes unsafe.',
     recommendationExplainer: {
       pantryMealNames: pantryMeals.map(meal => meal.name),
       pantryMealCount: pantryMeals.length,
-      localContextNote: buildLocalContextNote(input.daysLeft),
+      localContextNote: buildLocalContextNote(input.daysLeft, pricingContext),
       purchaseRationale,
       comparisonItems,
       coverageSummary: {
@@ -722,6 +698,16 @@ export function calculateSurvival(input: UserInput): SurvivalResult {
         targetDays: input.daysLeft,
         label: coverageImproved,
       },
+      selectedPricingContextLabel: pricingContext.label,
+      selectedPricingContextNote: pricingContext.contextNote,
+      selectedMissingIngredient: missingIngredients[0] ?? normalize(effectiveNextPurchase.name),
+      whyAlternativesLost: buildAlternativeLossReasons(purchaseOptions, selectedPurchase),
+    },
+    selectedPricingContext: pricingContext,
+    supportRecommendations,
+    analytics: {
+      pantryItemCount: pantryItems.length,
+      comparisonCount: comparisonItems.length,
     },
   };
 }

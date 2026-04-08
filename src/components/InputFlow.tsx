@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, ChevronLeft, Clock, Leaf, Minus, Package, Plus, Wallet, X } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { DietaryPreference, UserInput } from '@/lib/types';
+import { getPricingContexts } from '@/lib/data-api';
+import { DEFAULT_PRICING_CONTEXT_ID } from '@/lib/finals-data';
 
 interface InputFlowProps {
   onSubmit: (input: UserInput) => void;
@@ -39,8 +42,13 @@ const InputFlow = ({ onSubmit, onBack }: InputFlowProps) => {
   const [budget, setBudget] = useState('');
   const [daysLeft, setDaysLeft] = useState('');
   const [dietary, setDietary] = useState<DietaryPreference>('no-preference');
+  const [pricingContext, setPricingContext] = useState(DEFAULT_PRICING_CONTEXT_ID);
   const [pantryCounts, setPantryCounts] = useState<Record<string, number>>({});
   const [currentItem, setCurrentItem] = useState('');
+  const { data: pricingContexts = [] } = useQuery({
+    queryKey: ['pricing-contexts'],
+    queryFn: getPricingContexts,
+  });
 
   const setItemQuantity = (item: string, nextQuantity: number) => {
     const normalizedItem = normalizeItemLabel(item);
@@ -101,6 +109,7 @@ const InputFlow = ({ onSubmit, onBack }: InputFlowProps) => {
       daysLeft: parsedDaysLeft,
       dietaryPreference: dietary,
       pantryItems: buildPantryPayload(pantryCounts),
+      pricingContext,
     });
   };
 
@@ -231,6 +240,40 @@ const InputFlow = ({ onSubmit, onBack }: InputFlowProps) => {
           variants={sectionVariants}
           initial="hidden"
           animate="visible"
+          className="bg-card p-5 rounded-2xl shadow-card mb-3 border border-border/50"
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Wallet className="w-3.5 h-3.5 text-primary" />
+            </div>
+            <label className="font-label text-muted-foreground">Pricing Context</label>
+          </div>
+          <div className="grid gap-2">
+            {pricingContexts.map(option => (
+              <button
+                key={option.id}
+                onClick={() => setPricingContext(option.id)}
+                className={`rounded-xl border px-3.5 py-3 text-left transition-all ${
+                  pricingContext === option.id
+                    ? 'border-primary/25 bg-primary/10'
+                    : 'border-border/40 bg-muted/40 hover:border-border/60'
+                }`}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-sm font-medium text-foreground">{option.label}</span>
+                  {pricingContext === option.id && <span className="text-[11px] font-semibold uppercase tracking-wide text-primary">Selected</span>}
+                </div>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{option.contextNote}</p>
+              </button>
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div
+          custom={5}
+          variants={sectionVariants}
+          initial="hidden"
+          animate="visible"
           className="bg-card p-5 rounded-2xl shadow-card mb-8 border border-border/50"
         >
           <div className="flex items-center gap-2 mb-1">
@@ -343,7 +386,7 @@ const InputFlow = ({ onSubmit, onBack }: InputFlowProps) => {
         </motion.div>
 
         <motion.button
-          custom={5}
+          custom={6}
           variants={sectionVariants}
           initial="hidden"
           animate="visible"
