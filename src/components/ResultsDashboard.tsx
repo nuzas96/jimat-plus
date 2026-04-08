@@ -224,7 +224,7 @@ const ResultsDashboard = ({ result, input, onViewPlan, onBack }: ResultsDashboar
           >
             <div className="flex items-center gap-2 mb-3">
               <BarChart3 className="w-4 h-4 text-primary" />
-              <span className="font-label text-foreground">Current Plan vs After Tofu</span>
+              <span className="font-label text-foreground">Current Plan vs After This Purchase</span>
             </div>
             <div className="grid grid-cols-[1.2fr_1fr_1fr] gap-3 text-sm">
               <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Decision check</div>
